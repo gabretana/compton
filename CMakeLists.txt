@@ -227,3 +227,14 @@ set(CPACK_RPM_PACKAGE_LICENSE "unknown")
 set(CPACK_RPM_PACKAGE_REQUIRES "/bin/sh,libGL.so.1,libX11.so.6,libXcomposite.so.1,libXdamage.so.1,libXext.so.6,libXfixes.so.3,libXrandr.so.2,libXrender.so.1,libc.so.6,libconfig.so.9,libdbus-1.so.3,libm.so.6,libpcre.so.1")
 
 include(CPack)
+
+# uninstall target
+if(NOT TARGET uninstall)
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY)
+
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmak>
+endif()
