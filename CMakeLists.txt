@@ -1,4 +1,4 @@
-project(compton)
+project(compton-legacy)
 cmake_minimum_required(VERSION 2.8)
 
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
@@ -94,14 +94,14 @@ if (CONFIG_C2)
 	list(APPEND compton_SRCS src/c2.c)
 endif ()
 
-add_executable(compton ${compton_SRCS})
+add_executable(compton-legacy ${compton_SRCS})
 
 # == Find libraries ==
 
-target_link_libraries(compton "-lm" "-lrt")
+target_link_libraries(compton-legacy "-lm" "-lrt")
 
 if (CONFIG_VSYNC_OPENGL)
-	target_link_libraries(compton "-lGL")
+	target_link_libraries(compton-legacy "-lGL")
 endif ()
 
 include(FindPkgConfig)
@@ -114,10 +114,10 @@ macro(X11LIB_CHK lib)
 	if (NOT X11_${lib}_FOUND)
 		message(FATAL_ERROR "Could not find lib${lib}.")
 	endif ()
-	target_link_libraries(compton ${X11_${lib}_LIB})
+	target_link_libraries(compton-legacy ${X11_${lib}_LIB})
 endmacro ()
 
-target_link_libraries(compton ${X11_X11_LIB})
+target_link_libraries(compton-legacy ${X11_X11_LIB})
 X11LIB_CHK(Xcomposite)
 X11LIB_CHK(Xdamage)
 X11LIB_CHK(Xext)
@@ -132,14 +132,14 @@ endif ()
 if (CONFIG_REGEX_PCRE)
 	pkg_check_modules(LIBPCRE REQUIRED libpcre>=8.12)
 	add_definitions(${LIBPCRE_CFLAGS})
-	target_link_libraries(compton ${LIBPCRE_LDFLAGS})
+	target_link_libraries(compton-legacy ${LIBPCRE_LDFLAGS})
 endif ()
 
 # --- Find libconfig ---
 if (CONFIG_LIBCONFIG)
 	pkg_check_modules(LIBCONFIG REQUIRED libconfig>=1.3.2)
 	add_definitions(${LIBCONFIG_CFLAGS})
-	target_link_libraries(compton ${LIBCONFIG_LDFLAGS})
+	target_link_libraries(compton-legacy ${LIBCONFIG_LDFLAGS})
 	if (LIBCONFIG_VERSION VERSION_LESS 1.4)
 		add_definitions(-DCONFIG_LIBCONFIG_LEGACY)
 		message(STATUS "libconfig-1.3* detected. Enable legacy mode.")
@@ -150,7 +150,7 @@ endif ()
 if (CONFIG_DBUS)
 	pkg_check_modules(DBUS REQUIRED dbus-1)
 	add_definitions(${DBUS_CFLAGS})
-	target_link_libraries(compton ${DBUS_LDFLAGS})
+	target_link_libraries(compton-legacy ${DBUS_LDFLAGS})
 endif ()
 
 # --- Find libdrm ---
@@ -163,7 +163,7 @@ endif ()
 # == Install ==
 include(GNUInstallDirs)
 
-install(TARGETS compton
+install(TARGETS compton-legacy
 	DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT prog)
 install(FILES "${PROJECT_SOURCE_DIR}/bin/compton-trans"
 	DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT prog)
