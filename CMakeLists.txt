@@ -172,6 +172,21 @@ install(FILES
 	"${PROJECT_SOURCE_DIR}/LICENSE"
 	DESTINATION "${CMAKE_INSTALL_DOCDIR}" COMPONENT doc)
 
+install(
+    FILES "${PROJECT_SOURCE_DIR}/media/compton-legacy.svg"
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/scalable/apps"
+)
+
+install(
+    FILES "${PROJECT_SOURCE_DIR}/media/icons/48x48/compton-legacy.png"
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/48x48/apps"
+)
+
+install(
+    FILES "${PROJECT_SOURCE_DIR}/compton-legacy.desktop"
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
+)
+
 # == CPack ==
 
 if (NOT CPACK_SYSTEM_NAME)
@@ -236,5 +251,5 @@ if(NOT TARGET uninstall)
         IMMEDIATE @ONLY)
 
     add_custom_target(uninstall
-        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmak>
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 endif()
