@@ -2667,7 +2667,7 @@ win_on_factor_change(session_t *ps, win *w) {
 /**
  * Process needed window updates.
  */
-static void
+/*static void
 win_upd_run(session_t *ps, win *w, win_upd_t *pupd) {
   if (pupd->shadow) {
     win_determine_shadow(ps, w);
@@ -2685,7 +2685,7 @@ win_upd_run(session_t *ps, win *w, win_upd_t *pupd) {
     win_update_focused(ps, w);
     pupd->focus = false;
   }
-}
+}*/
 
 /**
  * Update cache data in struct _win that depends on window size.
@@ -3440,8 +3440,7 @@ wid_get_prop_window(session_t *ps, Window wid, Atom aprop) {
  */
 static void
 win_update_focused(session_t *ps, win *w) {
-  bool focused_old = w->focused;
-
+  
   if (UNSET != w->focused_force) {
     w->focused = w->focused_force;
   }
