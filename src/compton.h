@@ -723,17 +723,15 @@ win_render(session_t *ps, win *w, int x, int y, int wid, int hei,
 
 static inline void
 set_tgt_clip(session_t *ps, XserverRegion reg, const reg_data_t *pcache_reg) {
-  switch (ps->o.backend) {
-    case BKEND_XRENDER:
-    case BKEND_XR_GLX_HYBRID:
-      XFixesSetPictureClipRegion(ps->dpy, ps->tgt_buffer.pict, 0, 0, reg);
-      break;
+    if (ps->o.backend == BKEND_XRENDER || ps->o.backend == BKEND_XR_GLX_HYBRID) {
+        XFixesSetPictureClipRegion(ps->dpy, ps->tgt_buffer.pict, 0, 0, reg);
+    }
+
 #ifdef CONFIG_VSYNC_OPENGL
-    case BKEND_GLX:
-      glx_set_clip(ps, reg, pcache_reg);
-      break;
+    if (ps->o.backend == BKEND_GLX) {
+        glx_set_clip(ps, reg, pcache_reg);
+    }
 #endif
-  }
 }
 
 static bool

@@ -1694,35 +1694,30 @@ win_paint_win(session_t *ps, win *w, XserverRegion reg_paint,
     if (!ps->o.inactive_dim_fixed)
       dim_opacity *= get_opacity_percent(w);
 
-    switch (ps->o.backend) {
-      case BKEND_XRENDER:
-      case BKEND_XR_GLX_HYBRID:
-        {
-          unsigned short cval = 0xffff * dim_opacity;
 
-          // Premultiply color
-          XRenderColor color = {
+    if (ps->o.backend == BKEND_XRENDER || ps->o.backend == BKEND_XR_GLX_HYBRID) {
+        unsigned short cval = 0xffff * dim_opacity;
+        
+        // premultiply color
+        XRenderColor color = {
             .red = 0, .green = 0, .blue = 0, .alpha = cval,
-          };
-
-          XRectangle rect = {
+        };
+        
+        XRectangle rect = {
             .x = x,
             .y = y,
             .width = wid,
             .height = hei,
-          };
-
-          XRenderFillRectangles(ps->dpy, PictOpOver, ps->tgt_buffer.pict,
-              &color, &rect, 1);
-        }
-        break;
+        };
+        XRenderFillRectangles(ps->dpy, PictOpOver, ps->tgt_buffer.pict, &color,
+            &rect, 1);
+    }
 #ifdef CONFIG_VSYNC_OPENGL
-      case BKEND_GLX:
+    if (ps->o.backend == BKEND_GLX) {
         glx_dim_dst(ps, x, y, wid, hei, ps->psglx->z - 0.7, dim_opacity,
             reg_paint, pcache_reg);
-        break;
-#endif
     }
+#endif
   }
 
   glx_mark(ps, w->id, false);
@@ -6569,36 +6564,31 @@ static bool
 init_filters(session_t *ps) {
   // Blur filter
   if (ps->o.blur_background || ps->o.blur_background_frame) {
-    switch (ps->o.backend) {
-      case BKEND_XRENDER:
-      case BKEND_XR_GLX_HYBRID:
-        {
-          // Query filters
-          XFilters *pf = XRenderQueryFilters(ps->dpy, get_tgt_window(ps));
-          if (pf) {
+    
+    if (ps->o.backend == BKEND_XRENDER || ps->o.backend == BKEND_XR_GLX_HYBRID) {
+        // Query filters
+        XFilters *pf = XRenderQueryFilters(ps->dpy, get_tgt_window(ps));
+        if (pf) {
             for (int i = 0; i < pf->nfilter; ++i) {
-              // Convolution filter
-              if (!strcmp(pf->filter[i], XRFILTER_CONVOLUTION))
-                ps->xrfilter_convolution_exists = true;
+                // convolution filter
+                if (!strcmp(pf->filter[i], XRFILTER_CONVOLUTION))
+                    ps->xrfilter_convolution_exists = true;
             }
-          }
-          cxfree(pf);
-
-          // Turn features off if any required filter is not present
-          if (!ps->xrfilter_convolution_exists) {
+        }
+        cxfree(pf);
+        
+        // turn features off if any required filter is not present
+        if (!ps->xrfilter_convolution_exists) {
             printf_errf("(): X Render convolution filter unsupported by your X server. Background blur is not possible.");
             return false;
-          }
-          break;
         }
-#ifdef CONFIG_VSYNC_OPENGL
-      case BKEND_GLX:
-        {
-          if (!glx_init_blur(ps))
-            return false;
-        }
-#endif
     }
+#ifndef CONFIG_VSYNC_OPENGL
+    if (ps->o.backend == BKEND_GLX) {
+        if (!glx_init_blur(ps))
+            return false;
+    }
+#endif
   }
 
   return true;
